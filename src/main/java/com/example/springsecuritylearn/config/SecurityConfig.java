@@ -20,9 +20,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
 
-        // CSRF 필터 비활성화
+        // CSRF 필터 활성화. CSRF 설정시 로그아웃은 무조건 POST 요청만 허용되기 때문에 설정을 추가
         http
-                .csrf(csrf -> csrf.disable());
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/logout"));
         // 로그인 필터 설정
         http
                 .formLogin(login -> login
