@@ -20,9 +20,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
 
+        // CSRF 필터 비활성화
         http
-                .csrf(csrf -> csrf.disable())
-        ;
+                .csrf(csrf -> csrf.disable());
+        // 로그인 필터 설정
+        http
+                .formLogin(login -> login
+                        .loginProcessingUrl("/login")
+                        .loginPage("/login"));
 
         // 최종 필터 빌드
         return http.build();
