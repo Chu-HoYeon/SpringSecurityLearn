@@ -29,6 +29,17 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .loginPage("/login"));
 
+        // 인가 필터 설정
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/join").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/user/").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .anyRequest().denyAll()
+                );
+
         // 최종 필터 빌드
         return http.build();
     }

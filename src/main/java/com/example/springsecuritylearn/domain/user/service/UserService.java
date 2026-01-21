@@ -4,6 +4,7 @@ import com.example.springsecuritylearn.domain.user.dto.UserRequestDTO;
 import com.example.springsecuritylearn.domain.user.entity.UserEntity;
 import com.example.springsecuritylearn.domain.user.entity.UserRole;
 import com.example.springsecuritylearn.domain.user.repository.UserRepository;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,9 +36,9 @@ public class UserService implements UserDetailsService {
         userRepository.save(entity);
     }
 
-    // 유저 확인
+    // 유저 유무 확인
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
 
         UserEntity entity = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("not found"));
 
@@ -47,4 +48,17 @@ public class UserService implements UserDetailsService {
                 .roles(entity.getRole().name())
                 .build();
     }
+
+    /*
+    // 권한 검사 메소드
+    public boolean authCheck(Long postId) {
+1
+        String username = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        // 커스텀 쿼리
+        return postRepository.existsIdAndUsernameCustom(postId, username);
+    }
+    */
 }
