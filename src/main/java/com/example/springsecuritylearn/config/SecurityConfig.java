@@ -1,5 +1,6 @@
 package com.example.springsecuritylearn.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,12 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+
+    private final String rememberMeKey;
+
+    public SecurityConfig(@Value("${spring.security.remember-me.key}") String rememberMeKey) {
+        this.rememberMeKey = rememberMeKey;
+    }
 
     // 비밀번호 암호화 Bean 등록
     @Bean
@@ -23,12 +30,22 @@ public class SecurityConfig {
         // CSRF 필터 활성화. CSRF 설정시 로그아웃은 무조건 POST 요청만 허용되기 때문에 설정을 추가
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/logout"));
+                        .ignoringRequestMatchers("/logout")
+                );
         // 로그인 필터 설정
         http
                 .formLogin(login -> login
                         .loginProcessingUrl("/login")
-                        .loginPage("/login"));
+                        .loginPage("/login")
+                );
+
+        // Remember-Me 설정
+        http
+                .rememberMe(me -> me
+                        .key(rememberMeKey)
+                        .rememberMeParameter("remember-me")
+                        .tokenValiditySeconds(14 * 24 * 60 * 60)
+                );
 
         // 인가 필터 설정
         http
