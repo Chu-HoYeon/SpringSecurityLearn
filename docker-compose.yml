@@ -1,0 +1,24 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: SpringSecurityLearn_MySQL_Container
+    restart: unless-stopped
+
+    ports:
+      - "3306:3306"
+
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_DATABASE: springSC7
+      MYSQL_ROOT_PASSWORD: "1234"
+
+    volumes:
+      - SpringSecurityLearn_MySQL_Volume:/var/lib/mysql
+
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+
+volumes:
+  SpringSecurityLearn_MySQL_Volume:
+    name: SpringSecurityLearn_MySQL_Volume

@@ -72,10 +72,18 @@ public class SecurityConfig {
                         .anyRequest().denyAll()
                 );
 
+        // 세션
+        http
+                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // JWT 사용할 경우
+                        .sessionFixation().changeSessionId()
+                );
+
         // 최종 필터 빌드
         return http.build();
     }
 
+    // 인가 커스텀
     private AuthorizationManager<RequestAuthorizationContext> customAuthorizationManager() {
 
         return (authentication, context) -> {
