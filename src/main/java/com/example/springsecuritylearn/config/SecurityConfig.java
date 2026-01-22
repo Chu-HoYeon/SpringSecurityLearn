@@ -5,10 +5,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 @Configuration
 public class SecurityConfig {
@@ -65,7 +68,7 @@ public class SecurityConfig {
                         .requestMatchers("/join").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/user/").hasAnyRole("USER")
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/admin").access(customAuthorizationManager())
                         .anyRequest().denyAll()
                 );
 
@@ -73,4 +76,15 @@ public class SecurityConfig {
         return http.build();
     }
 
+    private AuthorizationManager<RequestAuthorizationContext> customAuthorizationManager() {
+
+        return (authentication, context) -> {
+
+            boolean allowed =
+                    authentication.get().getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            return new AuthorizationDecision(allowed);
+        };
+    }
 }
