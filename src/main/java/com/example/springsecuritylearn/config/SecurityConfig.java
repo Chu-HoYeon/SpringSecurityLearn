@@ -3,6 +3,8 @@ package com.example.springsecuritylearn.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,15 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    // Role Hierarchy 설정
+    @Bean
+    public RoleHierarchy roleHierarchy(){
+
+        return RoleHierarchyImpl.withRolePrefix("ROLE_")
+                .role("ADMIN").implies("USER")
+                .build();
     }
 
     // 시큐리티 필터 커스텀
@@ -53,7 +64,7 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/join").permitAll()
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers("/user/").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/user/").hasAnyRole("USER")
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().denyAll()
                 );
